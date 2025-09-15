@@ -27,51 +27,10 @@ public class SecurityConfigurations {
 
     @Autowired
     private UserRepository userRepository;
-
-    /*@Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.GET, "/consultas/**").hasAnyRole("MEDICO" , "ENFERMEIRO" , "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/consultas").hasAnyRole("MEDICO" , "ENFERMEIRO" , "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/consultas/**").hasAnyRole("MEDICO" , "ENFERMEIRO" , "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/consultas/**").hasAnyRole("MEDICO" , "ENFERMEIRO" , "ADMIN")
-
-                        .requestMatchers(HttpMethod.GET, "/medico/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/medico").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/medico/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/medico/**").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.GET, "/enfermeiro/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/enfermeiro").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/enfermeiro/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/enfermeiro/**").hasRole("ADMIN")
-
-
-                        .requestMatchers(HttpMethod.GET, "/paciente/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/paciente").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/paciente/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/paciente/**").hasRole("ADMIN")
-
-                        // liberar GraphQL e Playground
-                        .requestMatchers("/graphql/**").permitAll()
-                        .requestMatchers("/playground/**").permitAll()
-
-
-                        .anyRequest().authenticated())
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }*/
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                // desabilita CSRF (não usamos cookies de sessão)
+
                 .csrf(csrf -> csrf.disable())
 
                 // stateless, pois usamos JWT
@@ -79,7 +38,6 @@ public class SecurityConfigurations {
 
                 // regras de autorização
                 .authorizeHttpRequests(authorize -> authorize
-                        // endpoints públicos de autenticação
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
@@ -94,8 +52,8 @@ public class SecurityConfigurations {
 
                         // libera GraphQL e Playground para todos
                         .requestMatchers("/playground/**").permitAll()
-                        .requestMatchers("/graphql").permitAll() // Permite acesso ao GraphQL
-                        .requestMatchers("/graphiql").permitAll() // Permite acesso ao GraphiQL
+                        .requestMatchers("/graphql").permitAll()
+                        .requestMatchers("/graphiql").permitAll()
 
                         // qualquer outro endpoint precisa estar autenticado
                         .anyRequest().authenticated()

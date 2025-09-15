@@ -4,7 +4,9 @@ import fiap.gestao.hospitalar.dto.ConsultaResponseRecordDTO;
 import fiap.gestao.hospitalar.dto.CreateConsultaRecordDTO;
 import fiap.gestao.hospitalar.dto.UpdateConsultaRecordDTO;
 import fiap.gestao.hospitalar.entities.Consulta;
+import fiap.gestao.hospitalar.service.ConsultaPublisherService;
 import fiap.gestao.hospitalar.service.ConsultaService;
+import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +21,16 @@ import java.util.UUID;
 public class ConsultaController {
 
     private final ConsultaService consultaService;
+    private final ConsultaPublisherService consultaPublisherService;
 
-    public ConsultaController(ConsultaService consultaService) {
+    public ConsultaController(ConsultaService consultaService, ConsultaPublisherService consultaPublisherService) {
         this.consultaService = consultaService;
+        this.consultaPublisherService = consultaPublisherService;
     }
 
 
     @PostMapping
-    public ResponseEntity<Consulta> save(@RequestBody CreateConsultaRecordDTO input){
+    public ResponseEntity<Consulta> save(@Valid @RequestBody CreateConsultaRecordDTO input){
         return ResponseEntity.status(HttpStatus.CREATED).body(consultaService.save(input));
     }
 
@@ -50,7 +54,7 @@ public class ConsultaController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable UUID id, @RequestBody UpdateConsultaRecordDTO input){
+    public ResponseEntity<Void> update(@Valid @PathVariable UUID id, @RequestBody UpdateConsultaRecordDTO input){
         consultaService.update(id,input);
         return ResponseEntity.noContent().build();
     }
