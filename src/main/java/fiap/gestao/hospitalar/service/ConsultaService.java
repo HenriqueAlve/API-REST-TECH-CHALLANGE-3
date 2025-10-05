@@ -141,4 +141,11 @@ public class ConsultaService {
                 ))
                 .toList();
     }
+
+    public void delete(UUID id) {
+        var consulta = consultaRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Consulta não encontrada: id=" + id)
+        );
+        consultaRepository.delete(consulta);
+    }
 }
