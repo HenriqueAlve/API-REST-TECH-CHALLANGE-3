@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -32,6 +33,23 @@ public class SecurityConfigurations {
     @Autowired
     private UserRepository userRepository;
 
+    public static final List<String> WHITELIST = Arrays.asList(
+            "/actuator/*",
+            "/configuration/security",
+            "/configuration/ui",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/swagger-resources/configuration/security",
+            "/swagger-resources/configuration/ui",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/swagger-ui/index.html",
+            "/v3/api-docs/**",
+            "/webjars/**",
+            "/webjars/swagger-ui/**",
+            "/error"
+    );
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -39,11 +57,13 @@ public class SecurityConfigurations {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(WHITELIST.toArray(String[]::new)).permitAll()
                         // *** PRE-FLIGHT CORS ***
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // *** públicos ***
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+
                         // ADMIN
                         .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
                         .requestMatchers("/medico/**").hasRole("ADMIN")
