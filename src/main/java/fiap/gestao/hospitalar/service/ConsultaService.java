@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -84,14 +85,8 @@ public class ConsultaService {
                 () -> new ResourceNotFoundException("Consulta não encontrada: id=" + id)
         );
 
-        if (input.dataHora() != null){
-            consulta.setDataHora(input.dataHora());
-        }
-
-        if (input.descricao() != null){
-            consulta.setDescricao(input.descricao());
-        }
-
+        Optional.ofNullable(input.dataHora()).ifPresent(consulta::setDataHora);
+        Optional.ofNullable(input.descricao()).ifPresent(consulta::setDescricao);
     }
 
     @Transactional(readOnly = true)

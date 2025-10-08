@@ -3,11 +3,13 @@ package fiap.gestao.hospitalar.service;
 import fiap.gestao.hospitalar.dto.CreatePacienteRecordDTO;
 import fiap.gestao.hospitalar.dto.UpdatePacienteRecordDTo;
 import fiap.gestao.hospitalar.entities.Paciente;
+import fiap.gestao.hospitalar.exceptions.ResourceNotFoundException;
 import fiap.gestao.hospitalar.repository.PacienteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,30 +33,18 @@ public class PacienteService {
     @Transactional
     public void update(UUID id, UpdatePacienteRecordDTo input) {
         var paciente = pacienteRepository.findById(id).orElseThrow(
-                ()-> new RuntimeException("Paciente não encontrado")
+                () -> new ResourceNotFoundException("Paciente não encontrado: id=" + id)
         );
 
-        if (input.nome() != null){
-            paciente.setNome(input.nome());
-        }
-
-        if (input.cpf() != null) {
-            paciente.setCpf(input.cpf());
-        }
-
-        if (input.rg() != null) {
-            paciente.setRg(input.rg());
-        }
-
-        if (input.telefone() != null) {
-            paciente.setTelefone(input.telefone());
-        }
-
+        Optional.ofNullable(input.nome()).ifPresent(paciente::setNome);
+        Optional.ofNullable(input.cpf()).ifPresent(paciente::setCpf);
+        Optional.ofNullable(input.rg()).ifPresent(paciente::setRg);
+        Optional.ofNullable(input.telefone()).ifPresent(paciente::setTelefone);
     }
 
     public void delete(UUID id) {
         var paciente = pacienteRepository.findById(id).orElseThrow(
-                ()-> new RuntimeException("Paciente não encontrado")
+                () -> new ResourceNotFoundException("Paciente não encontrado: id=" + id)
         );
         pacienteRepository.delete(paciente);
     }
@@ -65,8 +55,7 @@ public class PacienteService {
 
     public Paciente findById(UUID id) {
         return pacienteRepository.findById(id).orElseThrow(
-                ()-> new RuntimeException("Paciente nao encontrado")
+                () -> new ResourceNotFoundException("Paciente não encontrado: id=" + id)
         );
-
     }
 }

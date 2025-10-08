@@ -3,11 +3,13 @@ package fiap.gestao.hospitalar.service;
 import fiap.gestao.hospitalar.dto.CreateMedicoRecordDTO;
 import fiap.gestao.hospitalar.dto.UpdateMedicoRecordDTO;
 import fiap.gestao.hospitalar.entities.Medico;
+import fiap.gestao.hospitalar.exceptions.ResourceNotFoundException;
 import fiap.gestao.hospitalar.repository.MedicoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,33 +34,19 @@ public class MedicoService {
     @Transactional
     public void update(UUID id, UpdateMedicoRecordDTO input) {
         var medico = medicoRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Médico com o" + "{id}" +"não encontrado")
+                () -> new ResourceNotFoundException("Médico não encontrado: id=" + id)
         );
-        if (input.nome() != null) {
-            medico.setNome(input.nome());
-        }
 
-        if (input.cpf() != null) {
-            medico.setCpf(input.cpf());
-        }
-
-        if (input.email() != null) {
-            medico.setEmail(input.email());
-        }
-
-        if (input.telefone() != null) {
-            medico.setTelefone(input.telefone());
-        }
-
-        if (input.crm() != null) {
-            medico.setCrm(input.crm());
-        }
-
+        Optional.ofNullable(input.nome()).ifPresent(medico::setNome);
+        Optional.ofNullable(input.cpf()).ifPresent(medico::setCpf);
+        Optional.ofNullable(input.email()).ifPresent(medico::setEmail);
+        Optional.ofNullable(input.telefone()).ifPresent(medico::setTelefone);
+        Optional.ofNullable(input.crm()).ifPresent(medico::setCrm);
     }
 
     public void delete(UUID id) {
         var medico = medicoRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Medico com o" + id + "não encontrado")
+                () -> new ResourceNotFoundException("Médico não encontrado: id=" + id)
         );
         medicoRepository.delete(medico);
     }
@@ -68,9 +56,8 @@ public class MedicoService {
     }
 
     public Medico findById(UUID id) {
-        return  medicoRepository.findById(id).orElseThrow(
-                ()-> new RuntimeException("Medico com o " + id + "não encontrado")
+        return medicoRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Médico não encontrado: id=" + id)
         );
-
     }
 }
