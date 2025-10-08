@@ -58,10 +58,4 @@ public class ConsultaController {
         consultaService.update(id,input);
         return ResponseEntity.noContent().build();
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id){
-        consultaService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
 }

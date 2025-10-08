@@ -25,44 +25,24 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String path = request.getRequestURI();
-        final String method = request.getMethod();
+        String path = request.getRequestURI();
 
-        // 1) Preflight CORS deve passar direto
-        if ("OPTIONS".equalsIgnoreCase(method)) {
+        if (path.startsWith("/graphql") || path.startsWith("/playground")) {
             filterChain.doFilter(request, response);
             return;
         }
+        var token = this.recoverToken(request);
+        if(token != null){
+            var login = tokenService.validateToken(token);
+            UserDetails user = userRepository.findByLogin(login);
 
-        // 2) Endpoints públicos devem passar sem exigir token
-        if (path.startsWith("/auth/")
-                || path.startsWith("/playground")
-                || "/graphql".equals(path)
-                || "/graphiql".equals(path)
-                || "/error".equals(path)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // 3) Demais rotas: validar token se houver
-        String token = recoverToken(request);
-        if (token != null && !token.isBlank()) {
-            try {
-                String login = tokenService.validateToken(token);
-                if (login != null) {
-                    UserDetails user = userRepository.findByLogin(login);
-                    var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                    // opcional: setar detalhes da requisição
-                    // auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
-            } catch (Exception e) {
-                SecurityContextHolder.clearContext(); // token inválido: segue sem auth
-            }
+            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
     }
+
 
 
 
