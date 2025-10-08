@@ -1,10 +1,7 @@
 package fiap.gestao.hospitalar.controller;
 
-import fiap.gestao.hospitalar.dto.CreateMedicoRecordDTO;
 import fiap.gestao.hospitalar.dto.CreatePacienteRecordDTO;
-import fiap.gestao.hospitalar.dto.UpdateMedicoRecordDTO;
 import fiap.gestao.hospitalar.dto.UpdatePacienteRecordDTo;
-import fiap.gestao.hospitalar.entities.Medico;
 import fiap.gestao.hospitalar.entities.Paciente;
 import fiap.gestao.hospitalar.service.PacienteService;
 import org.springframework.http.HttpStatus;

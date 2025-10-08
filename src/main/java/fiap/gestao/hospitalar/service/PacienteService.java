@@ -4,6 +4,7 @@ import fiap.gestao.hospitalar.dto.CreatePacienteRecordDTO;
 import fiap.gestao.hospitalar.dto.UpdatePacienteRecordDTo;
 import fiap.gestao.hospitalar.entities.Paciente;
 import fiap.gestao.hospitalar.repository.PacienteRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,15 +28,28 @@ public class PacienteService {
         return pacienteRepository.save(paciente);
     }
 
+    @Transactional
     public void update(UUID id, UpdatePacienteRecordDTo input) {
         var paciente = pacienteRepository.findById(id).orElseThrow(
                 ()-> new RuntimeException("Paciente não encontrado")
         );
-        paciente.setNome(input.nome());
-        paciente.setCpf(input.cpf());
-        paciente.setRg(input.rg());
-        paciente.setTelefone(input.telefone());
-        pacienteRepository.save(paciente);
+
+        if (input.nome() != null){
+            paciente.setNome(input.nome());
+        }
+
+        if (input.cpf() != null) {
+            paciente.setCpf(input.cpf());
+        }
+
+        if (input.rg() != null) {
+            paciente.setRg(input.rg());
+        }
+
+        if (input.telefone() != null) {
+            paciente.setTelefone(input.telefone());
+        }
+
     }
 
     public void delete(UUID id) {

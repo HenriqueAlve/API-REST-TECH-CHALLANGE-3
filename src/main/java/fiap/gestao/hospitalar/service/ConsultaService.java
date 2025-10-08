@@ -84,10 +84,14 @@ public class ConsultaService {
                 () -> new ResourceNotFoundException("Consulta não encontrada: id=" + id)
         );
 
-        consulta.setDataHora(input.dataHora());
-        consulta.setDescricao(input.descricao());
+        if (input.dataHora() != null){
+            consulta.setDataHora(input.dataHora());
+        }
 
-        consultaRepository.save(consulta);
+        if (input.descricao() != null){
+            consulta.setDescricao(input.descricao());
+        }
+
     }
 
     @Transactional(readOnly = true)

@@ -4,6 +4,7 @@ import fiap.gestao.hospitalar.dto.CreateEnfermeiroRecordDTO;
 import fiap.gestao.hospitalar.dto.UpdateEnfermeiroRecordDTO;
 import fiap.gestao.hospitalar.entities.Enfermeiro;
 import fiap.gestao.hospitalar.repository.EnfermeiroRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,14 +27,24 @@ public class EnfermeiroService {
         return enfermeiroRepository.save(enfermeiro);
     }
 
+    @Transactional
     public void update(UUID id, UpdateEnfermeiroRecordDTO input) {
         var enfermeiro = enfermeiroRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Enfermeiro não encontrado!")
         );
-        enfermeiro.setNome(input.nome());
-        enfermeiro.setEmail(input.email());
-        enfermeiro.setTelefone(input.telefone());
-        enfermeiroRepository.save(enfermeiro);
+
+        if (input.nome() != null){
+            enfermeiro.setNome(input.nome());
+        }
+
+        if (input.email() != null) {
+            enfermeiro.setEmail(input.email());
+        }
+
+        if (input.telefone() != null) {
+            enfermeiro.setTelefone(input.telefone());
+        }
+
     }
 
     public void delete(UUID id) {
